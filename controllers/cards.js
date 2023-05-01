@@ -13,10 +13,9 @@ const createCard = (req, res) => {
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные в форме создания карточки' });
-        return;
+        return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные в форме создания карточки' });
       }
-      res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
+      return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
     });
 };
 
@@ -26,14 +25,12 @@ const deleteCard = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные карточки не найдены' });
-        return;
+        return res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные карточки не найдены' });
       }
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные карточки данные при запросе' });
-        return;
+        return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные карточки данные при запросе' });
       }
-      res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
+      return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
     });
 };
 
@@ -43,14 +40,12 @@ const likeCard = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные карточки не найдены' });
-        return;
+        return res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные карточки не найдены' });
       }
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные карточки при запросе' });
-        return;
+        return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные карточки при запросе' });
       }
-      res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
+      return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
     });
 };
 
@@ -60,14 +55,12 @@ const dislikeCard = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные карточки не найдены' });
-        return;
+        return res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные карточки не найдены' });
       }
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные карточки при запросе' });
-        return;
+        return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные карточки при запросе' });
       }
-      res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
+      return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
     });
 };
 
