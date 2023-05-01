@@ -46,7 +46,7 @@ const changeProfile = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         return res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные пользователя не найдены' });
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя при запросе' });
       }
       return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
@@ -62,7 +62,7 @@ const changeAvatar = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         return res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные пользователя не найдены' });
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя при запросе' });
       }
       return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
