@@ -16,6 +16,10 @@ const getUserById = (req, res) => {
         res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные пользователя не найдены' });
         return;
       }
+      if (err.name === 'CastError') {
+        res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя при запросе' });
+        return;
+      }
       res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
     });
 };
