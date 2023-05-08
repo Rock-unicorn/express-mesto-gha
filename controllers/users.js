@@ -1,3 +1,6 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
 const { ERROR_CODE_BAD_REQUEST, ERROR_CODE_INTERNAL_SERVER_ERROR, ERROR_CODE_NOT_FOUND } = require('../utils/errors');
 
@@ -24,14 +27,21 @@ const getUserById = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные в форме создания пользователя' });
-      }
-      return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => {
+      User.create({
+        name, about, avatar, email, password: hash,
+      })
+        .then((user) => res.status(201).send(user))
+        .catch((err) => {
+          if (err.name === 'ValidationError') {
+            return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные в форме создания пользователя' });
+          }
+          return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
+        });
     });
 };
 
@@ -73,6 +83,37 @@ const changeAvatar = (req, res) => {
     });
 };
 
+const login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, '81409eeb7b60688eff9e7e9b87fd2986878eb85aa851d4bda011e65b635ffe84', { expiresIn: '3d' });
+      return res.send({ token });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
+};
+
+const getUserInfo = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail()
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные пользователя не найдены' });
+      }
+      if (err.name === 'ValidationError') {
+        return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя при запросе' });
+      }
+      if (err.name === 'CastError') {
+        return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя при запросе' });
+      }
+      return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
+    })
+    .catch(next);
+};
+
 module.exports = {
-  getUsers, getUserById, createUser, changeProfile, changeAvatar,
+  getUsers, getUserById, createUser, changeProfile, changeAvatar, login, getUserInfo,
 };

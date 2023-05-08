@@ -20,18 +20,28 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail()
-    .then((card) => res.send(card))
-    .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
+  const findAndRemove = () => {
+    Card.findByIdAndRemove(req.params.cardId)
+      .orFail()
+      .then((card) => res.send(card))
+      .catch((err) => {
+        if (err.name === 'CastError') {
+          return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные карточки данные при запросе' });
+        }
+        return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
+      });
+  };
+  Card.findById(req.params.cardId)
+    .then((card) => {
+      if (!card) {
         return res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемые данные карточки не найдены' });
       }
-      if (err.name === 'CastError') {
-        return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Переданы некорректные карточки данные при запросе' });
+      if (req.user._id === card.owner.toString()) {
+        return findAndRemove();
       }
-      return res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' });
-    });
+      return res.status(ERROR_CODE_BAD_REQUEST).send({ message: 'Пользователи не могут удалять чужие карточки' });
+    })
+    .catch(() => { res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({ message: 'Серверная ошибка' }); });
 };
 
 const likeCard = (req, res) => {
