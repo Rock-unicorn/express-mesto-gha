@@ -1,7 +1,7 @@
-const { ERROR_CODE_NOT_FOUND } = require('../utils/errors');
+const NotFoundError = require('../utils/errors/not-found-err');
 
-const errorsRouter = (req, res) => {
-  res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Данные по запросу не найдены' });
+const errorsRouter = (req, res, next) => {
+  next(new NotFoundError('Данные по запросу не найдены'));
 };
 
 module.exports = errorsRouter;

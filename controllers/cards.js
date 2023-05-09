@@ -1,8 +1,8 @@
 const Card = require('../models/card');
-const ForbiddenError = require('../errors/forbidden-err');
-const RequestError = require('../errors/request-err');
-const NotFoundError = require('../errors/not-found-err');
-const DefaultError = require('../errors/default-err');
+const ForbiddenError = require('../utils/errors/forbidden-err');
+const RequestError = require('../utils/errors/request-err');
+const NotFoundError = require('../utils/errors/not-found-err');
+const DefaultError = require('../utils/errors/default-err');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -16,11 +16,11 @@ const createCard = (req, res, next) => {
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new RequestError('Переданы некорректные данные в форме создания карточки');
+        next(new RequestError('Переданы некорректные данные в форме создания карточки'));
+      } else {
+        next(new DefaultError('Серверная ошибка'));
       }
-      throw new DefaultError('Серверная ошибка');
-    })
-    .catch(next);
+    });
 };
 
 const deleteCard = (req, res, next) => {
@@ -30,9 +30,9 @@ const deleteCard = (req, res, next) => {
       .then((card) => res.send(card))
       .catch((err) => {
         if (err.name === 'CastError') {
-          throw new RequestError('Переданы некорректные карточки данные при запросе');
+          next(new RequestError('Переданы некорректные карточки данные при запросе'));
         }
-        throw new DefaultError('Серверная ошибка');
+        next(new DefaultError('Серверная ошибка'));
       });
   };
   Card.findById(req.params.cardId)
@@ -55,14 +55,13 @@ const likeCard = (req, res, next) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Запрашиваемые данные карточки не найдены');
+        next(new NotFoundError('Запрашиваемые данные карточки не найдены'));
       }
       if (err.name === 'CastError') {
-        throw new RequestError('Переданы некорректные данные карточки при запросе');
+        next(new RequestError('Переданы некорректные данные карточки при запросе'));
       }
-      throw new DefaultError('Серверная ошибка');
-    })
-    .catch(next);
+      next(new DefaultError('Серверная ошибка'));
+    });
 };
 
 const dislikeCard = (req, res, next) => {
@@ -71,14 +70,13 @@ const dislikeCard = (req, res, next) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Запрашиваемые данные карточки не найдены');
+        next(new NotFoundError('Запрашиваемые данные карточки не найдены'));
       }
       if (err.name === 'CastError') {
-        throw new RequestError('Переданы некорректные данные карточки при запросе');
+        next(new RequestError('Переданы некорректные данные карточки при запросе'));
       }
-      throw new DefaultError('Серверная ошибка');
-    })
-    .catch(next);
+      next(new DefaultError('Серверная ошибка'));
+    });
 };
 
 module.exports = {

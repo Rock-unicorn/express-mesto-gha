@@ -3,10 +3,10 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
-const NotFoundError = require('../errors/not-found-err');
-const ConflictError = require('../errors/conflict-err');
-const DefaultError = require('../errors/default-err');
-const RequestError = require('../errors/request-err');
+const NotFoundError = require('../utils/errors/not-found-err');
+const ConflictError = require('../utils/errors/conflict-err');
+const DefaultError = require('../utils/errors/default-err');
+const RequestError = require('../utils/errors/request-err');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -21,14 +21,13 @@ const getUserById = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Запрашиваемые данные пользователя не найдены');
+        next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
       if (err.name === 'CastError') {
-        throw new RequestError('Переданы некорректные данные пользователя при запросе');
+        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
-      throw new DefaultError('Серверная ошибка');
-    })
-    .catch(next);
+      next(new DefaultError('Серверная ошибка'));
+    });
 };
 
 const createUser = (req, res, next) => {
@@ -43,14 +42,13 @@ const createUser = (req, res, next) => {
         .then((user) => res.status(201).send(user))
         .catch((err) => {
           if (err.name === 'ValidationError') {
-            throw new RequestError('Переданы некорректные данные в форме создания пользователя');
+            next(new RequestError('Переданы некорректные данные в форме создания пользователя'));
           }
           if (err.code === 11000) {
-            throw new ConflictError('Введенный email занят');
+            next(new ConflictError('Введенный email занят'));
           }
-          throw new DefaultError('Серверная ошибка');
-        })
-        .catch(next);
+          next(new DefaultError('Серверная ошибка'));
+        });
     });
 };
 
@@ -61,17 +59,16 @@ const changeProfile = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Запрашиваемые данные пользователя не найдены');
+        next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
       if (err.name === 'ValidationError') {
-        throw new RequestError('Переданы некорректные данные пользователя при запросе');
+        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
       if (err.name === 'CastError') {
-        throw new RequestError('Переданы некорректные данные пользователя при запросе');
+        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
-      throw new DefaultError('Серверная ошибка');
-    })
-    .catch(next);
+      next(new DefaultError('Серверная ошибка'));
+    });
 };
 
 const changeAvatar = (req, res, next) => {
@@ -81,17 +78,16 @@ const changeAvatar = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Запрашиваемые данные пользователя не найдены');
+        next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
       if (err.name === 'ValidationError') {
-        throw new RequestError('Переданы некорректные данные пользователя при запросе');
+        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
       if (err.name === 'CastError') {
-        throw new RequestError('Переданы некорректные данные пользователя при запросе');
+        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
-      throw new DefaultError('Серверная ошибка');
-    })
-    .catch(next);
+      next(new DefaultError('Серверная ошибка'));
+    });
 };
 
 const login = (req, res, next) => {
@@ -110,17 +106,16 @@ const getUserInfo = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Запрашиваемые данные пользователя не найдены');
+        next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
       if (err.name === 'ValidationError') {
-        throw new RequestError('Переданы некорректные данные пользователя при запросе');
+        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
       if (err.name === 'CastError') {
-        throw new RequestError('Переданы некорректные данные пользователя при запросе');
+        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
-      throw new DefaultError('Серверная ошибка');
-    })
-    .catch(next);
+      next(new DefaultError('Серверная ошибка'));
+    });
 };
 
 module.exports = {
