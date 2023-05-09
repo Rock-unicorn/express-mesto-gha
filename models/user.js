@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
       minlength: [2, 'Минимальная длина поня "about" - 2'],
       maxlength: [30, 'Максимальная длина поля "about" - 30'],
       required: false,
-      default: 'Исследователь океана',
+      default: 'Исследователь',
     },
     avatar: {
       type: String,

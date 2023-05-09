@@ -24,34 +24,26 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  const findAndRemove = () => {
-    Card.findByIdAndRemove(req.params.cardId)
-      .orFail()
-      .then((card) => res.send(card))
-      .catch((err) => {
-        if (err.name === 'CastError') {
-          next(new RequestError('Переданы некорректные карточки данные при запросе'));
-        }
-        next(err);
-      });
-  };
   Card.findById(req.params.cardId)
-    .orFail()
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Запрашиваемые данные карточки не найдены');
+        next(new NotFoundError('Запрашиваемые данные карточки не найдены'));
       }
-      if (req.user._id === card.owner.toString()) {
-        return findAndRemove();
+      if (req.user._id !== card.owner.toString()) {
+        next(new ForbiddenError('Пользователи не могут удалять чужие карточки'));
       }
-      throw new ForbiddenError('Пользователи не могут удалять чужие карточки');
+      return card.remove().then(() => res.send({ data: card }));
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new RequestError('Переданы некорректные данные карточки при запросе'));
+      }
+      return next(err);
+    });
 };
 
 const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .orFail()
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
@@ -66,7 +58,6 @@ const likeCard = (req, res, next) => {
 
 const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .orFail()
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
