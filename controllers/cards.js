@@ -32,7 +32,7 @@ const deleteCard = (req, res, next) => {
         if (err.name === 'CastError') {
           next(new RequestError('Переданы некорректные карточки данные при запросе'));
         }
-        next(new DefaultError('Серверная ошибка'));
+        next(err);
       });
   };
   Card.findById(req.params.cardId)
