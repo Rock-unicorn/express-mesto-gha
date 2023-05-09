@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const routes = require('./routes/index');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const middlewareErrors = require('./errors/middleware-errors');
 
 const { PORT = 3000 } = process.env;
 
@@ -16,5 +17,6 @@ app.post('/signin', login);
 app.post('/signup', createUser);
 app.use(auth);
 app.use('/', routes);
+app.use(middlewareErrors);
 
 app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
