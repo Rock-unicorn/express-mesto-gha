@@ -22,6 +22,9 @@ const findUserById = (id, res, next) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
+      if (err instanceof mongoose.Error.ValidationError) {
+        return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
+      }
       return next(err);
     });
 };
