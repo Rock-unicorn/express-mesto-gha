@@ -5,7 +5,6 @@ const User = require('../models/user');
 
 const NotFoundError = require('../utils/errors/not-found-err');
 const ConflictError = require('../utils/errors/conflict-err');
-const DefaultError = require('../utils/errors/default-err');
 const RequestError = require('../utils/errors/request-err');
 
 const getUsers = (req, res, next) => {
@@ -20,13 +19,10 @@ const getUserById = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
+      if (err instanceof Error.DocumentNotFoundError) {
+        return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
-      if (err.name === 'CastError') {
-        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
-      }
-      next(new DefaultError('Серверная ошибка'));
+      return next(err);
     });
 };
 
@@ -46,13 +42,13 @@ const createUser = (req, res, next) => {
           email: user.email,
         }))
         .catch((err) => {
-          if (err.name === 'ValidationError') {
-            next(new RequestError('Переданы некорректные данные в форме создания пользователя'));
+          if (err instanceof Error.ValidationError) {
+            return next(new RequestError('Переданы некорректные данные в форме создания пользователя'));
           }
-          if (err.code === 11000) {
-            next(new ConflictError('Введенный email занят'));
+          if (err instanceof Error.OverwriteModelError) {
+            return next(new ConflictError('Введенный email занят'));
           }
-          next(new DefaultError('Серверная ошибка'));
+          return next(err);
         });
     });
 };
@@ -63,16 +59,13 @@ const changeProfile = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
+      if (err instanceof Error.DocumentNotFoundError) {
+        return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
-      if (err.name === 'ValidationError') {
-        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
+      if (err instanceof Error.ValidationError) {
+        return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
-      if (err.name === 'CastError') {
-        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
-      }
-      next(new DefaultError('Серверная ошибка'));
+      return next(err);
     });
 };
 
@@ -82,16 +75,13 @@ const changeAvatar = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
+      if (err instanceof Error.DocumentNotFoundError) {
+        return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
-      if (err.name === 'ValidationError') {
-        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
+      if (err instanceof Error.ValidationError) {
+        return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
-      if (err.name === 'CastError') {
-        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
-      }
-      next(new DefaultError('Серверная ошибка'));
+      return next(err);
     });
 };
 
@@ -110,16 +100,13 @@ const getUserInfo = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
+      if (err instanceof Error.DocumentNotFoundError) {
+        return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
-      if (err.name === 'ValidationError') {
-        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
+      if (err instanceof Error.ValidationError) {
+        return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
-      if (err.name === 'CastError') {
-        next(new RequestError('Переданы некорректные данные пользователя при запросе'));
-      }
-      next(new DefaultError('Серверная ошибка'));
+      return next(err);
     });
 };
 
