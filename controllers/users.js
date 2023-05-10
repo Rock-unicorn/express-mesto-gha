@@ -45,7 +45,7 @@ const createUser = (req, res, next) => {
           if (err instanceof Error.ValidationError) {
             return next(new RequestError('Переданы некорректные данные в форме создания пользователя'));
           }
-          if (err instanceof Error.OverwriteModelError) {
+          if (err instanceof Error.MongoError) {
             return next(new ConflictError('Введенный email занят'));
           }
           return next(err);
