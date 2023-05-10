@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const User = require('../models/user');
 
@@ -19,7 +20,7 @@ const getUserById = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
       return next(err);
@@ -42,7 +43,7 @@ const createUser = (req, res, next) => {
           email: user.email,
         }))
         .catch((err) => {
-          if (err.name === 'ValidationError') {
+          if (err instanceof mongoose.Error.ValidationError) {
             return next(new RequestError('Переданы некорректные данные в форме создания пользователя'));
           }
           if (err.code === 11000) {
@@ -59,10 +60,10 @@ const changeProfile = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
       return next(err);
@@ -75,10 +76,10 @@ const changeAvatar = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
       return next(err);
@@ -100,10 +101,10 @@ const getUserInfo = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
       return next(err);
