@@ -19,7 +19,7 @@ const getUserById = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err instanceof Error.DocumentNotFoundError) {
+      if (err.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
       return next(err);
@@ -42,7 +42,7 @@ const createUser = (req, res, next) => {
           email: user.email,
         }))
         .catch((err) => {
-          if (err instanceof Error.ValidationError) {
+          if (err.name === 'ValidationError') {
             return next(new RequestError('Переданы некорректные данные в форме создания пользователя'));
           }
           if (err.code === 11000) {
@@ -59,10 +59,10 @@ const changeProfile = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err instanceof Error.DocumentNotFoundError) {
+      if (err.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
-      if (err instanceof Error.ValidationError) {
+      if (err.name === 'ValidationError') {
         return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
       return next(err);
@@ -75,10 +75,10 @@ const changeAvatar = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err instanceof Error.DocumentNotFoundError) {
+      if (err.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
-      if (err instanceof Error.ValidationError) {
+      if (err.name === 'ValidationError') {
         return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
       return next(err);
@@ -100,10 +100,10 @@ const getUserInfo = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err instanceof Error.DocumentNotFoundError) {
+      if (err.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
       }
-      if (err instanceof Error.ValidationError) {
+      if (err.name === 'ValidationError') {
         return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
       }
       return next(err);

@@ -14,7 +14,7 @@ const createCard = (req, res, next) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
-      if (err instanceof Error.ValidationError) {
+      if (err.name === 'ValidationError') {
         next(new RequestError('Переданы некорректные данные в форме создания карточки'));
       } else {
         next(err);
@@ -36,7 +36,7 @@ const deleteCard = (req, res, next) => {
     .then((card) => Card.deleteOne(card))
     .then((card) => res.status(200).send(card))
     .catch((err) => {
-      if (err instanceof Error.CastError) {
+      if (err.name === 'CastError') {
         return next(new RequestError('Переданы некорректные данные карточки при запросе'));
       }
       return next(err);
@@ -48,10 +48,10 @@ const likeCard = (req, res, next) => {
     .orFail()
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err instanceof Error.DocumentNotFoundError) {
+      if (err.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Запрашиваемые данные карточки не найдены'));
       }
-      if (err instanceof Error.CastError) {
+      if (err.name === 'CastError') {
         return next(new RequestError('Переданы некорректные данные карточки при запросе'));
       }
       return next(err);
@@ -63,10 +63,10 @@ const dislikeCard = (req, res, next) => {
     .orFail()
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err instanceof Error.DocumentNotFoundError) {
+      if (err.name === 'DocumentNotFoundError') {
         return next(new NotFoundError('Запрашиваемые данные карточки не найдены'));
       }
-      if (err instanceof Error.CastError) {
+      if (err.name === 'CastError') {
         return next(new RequestError('Переданы некорректные данные карточки при запросе'));
       }
       return next(err);
