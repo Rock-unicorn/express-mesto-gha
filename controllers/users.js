@@ -30,7 +30,7 @@ const findUserById = (id, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
-  const { userId } = req.params;
+  const { userId } = req.params.userId;
   findUserById(userId, res, next);
 };
 
