@@ -64,9 +64,8 @@ const createUser = (req, res, next) => {
     });
 };
 
-const changeProfile = (req, res, next) => {
-  const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+const changeUserInfo = (id, data, res, next) => {
+  User.findByIdAndUpdate(id, data, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
@@ -80,20 +79,14 @@ const changeProfile = (req, res, next) => {
     });
 };
 
+const changeProfile = (req, res, next) => {
+  const { name, about } = req.body;
+  changeUserInfo(req.user._id, { name, about }, res, next);
+};
+
 const changeAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .orFail()
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
-      }
-      if (err instanceof mongoose.Error.ValidationError) {
-        return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
-      }
-      return next(err);
-    });
+  changeUserInfo(req.user._id, { avatar }, res, next);
 };
 
 const login = (req, res, next) => {
