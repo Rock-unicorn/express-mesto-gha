@@ -14,9 +14,8 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 
-const getUserById = (req, res, next) => {
-  const { userId } = req.params;
-  User.findById(userId)
+const findUserById = (id, res, next) => {
+  User.findById(id)
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
@@ -25,6 +24,16 @@ const getUserById = (req, res, next) => {
       }
       return next(err);
     });
+};
+
+const getUserById = (req, res, next) => {
+  const { userId } = req.params;
+  findUserById(userId, res, next);
+};
+
+const getUserInfo = (req, res, next) => {
+  const { userId } = req.user._id;
+  findUserById(userId, res, next);
 };
 
 const createUser = (req, res, next) => {
@@ -94,21 +103,6 @@ const login = (req, res, next) => {
       return res.send({ token });
     })
     .catch(next);
-};
-
-const getUserInfo = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail()
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        return next(new NotFoundError('Запрашиваемые данные пользователя не найдены'));
-      }
-      if (err instanceof mongoose.Error.ValidationError) {
-        return next(new RequestError('Переданы некорректные данные пользователя при запросе'));
-      }
-      return next(err);
-    });
 };
 
 module.exports = {
