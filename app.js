@@ -8,6 +8,7 @@ const auth = require('./middlewares/auth');
 const middlewareErrors = require('./utils/errors/middleware-errors');
 const { validationLogin, validationCreateUser } = require('./middlewares/validation');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const corsConfig = require('./middlewares/corsConfig');
 
 const { PORT = 3000 } = process.env;
 
@@ -16,6 +17,7 @@ const app = express();
 app.use(express.json());
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 app.use(helmet());
+app.use(corsConfig);
 app.use(requestLogger);
 app.post('/signin', validationLogin, login);
 app.post('/signup', validationCreateUser, createUser);
